@@ -1,0 +1,163 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FURSYS Showroom Finder v3</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans KR",sans-serif;background:#f5f5f3;color:#111}button,input{font:inherit}button{cursor:pointer}
+header{height:72px;background:#fff;border-bottom:1px solid #e7e7e7;display:flex;align-items:center;padding:0 34px;position:sticky;top:0;z-index:30}
+header img{width:108px}.nav{display:flex;gap:8px;margin-left:42px}.nav button{border:0;background:none;padding:12px 13px;font-weight:700;color:#777}.nav button.on{color:#111;border-bottom:2px solid #111}.cartTop{margin-left:auto;border:1px solid #ddd;background:#fff;border-radius:999px;padding:10px 15px;font-weight:700}
+main{max-width:1500px;margin:auto;padding:34px}.hero{padding:28px 0 34px}.hero h1{font-size:42px;letter-spacing:-1.8px;margin:0 0 10px}.hero p{color:#777;font-size:16px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}.entry{background:#fff;border:1px solid #e4e4e4;border-radius:18px;padding:30px;min-height:220px}.entry h2{font-size:27px}.entry p{color:#777;line-height:1.6}.entry button,.black{border:0;background:#111;color:#fff;border-radius:9px;padding:12px 16px}
+.view{display:none}.view.on{display:block}.search{display:flex;gap:8px;background:#fff;border:1px solid #ddd;border-radius:14px;padding:9px;margin:10px 0 14px}.search input{flex:1;border:0;outline:0;padding:10px;font-size:19px}
+.pills{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}.pill{border:1px solid #ddd;background:#fff;border-radius:999px;padding:8px 13px}.pill.on{background:#111;color:#fff}
+.layout{display:grid;grid-template-columns:1fr 355px;gap:18px}.panel{background:#fff;border:1px solid #e4e4e4;border-radius:15px;overflow:hidden}.summary{padding:13px 16px;border-bottom:1px solid #eee;color:#777;font-size:12px}
+.row{display:grid;grid-template-columns:150px 145px 1fr 125px;gap:12px;align-items:center;padding:13px 16px;border-bottom:1px solid #eee}.row.click{cursor:pointer}.row.click:hover{background:#fafafa}.head{font-size:11px;color:#888;background:#fafafa}.code{font-weight:800}.muted{font-size:11px;color:#999}.price{text-align:right;font-weight:800}
+.cart{padding:20px;position:sticky;top:92px;height:max-content}.cartitems{max-height:330px;overflow:auto}.citem{padding:11px 0;border-bottom:1px solid #eee}.cline,.trow{display:flex;justify-content:space-between;gap:8px}.qty{width:52px}.totals{border-top:1px solid #eee;margin-top:14px;padding-top:10px}.trow{margin:9px 0;font-size:13px}.grand{font-size:20px;font-weight:900}.vatbox{background:#f4f4f2;border-radius:10px;padding:10px}.warn{font-size:11px;color:#8a6500}.disc{width:65px}
+.refgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.refcard{background:#fff;border:1px solid #e4e4e4;border-radius:14px;overflow:hidden;cursor:pointer}.refcard img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block}.refmeta{padding:12px}.refmeta b{display:block;margin-bottom:4px}.spacegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.space{background:#fff;border:1px solid #e3e3e3;border-radius:16px;padding:26px;min-height:150px}.space h3{margin-top:0}.space p{color:#777;font-size:13px;line-height:1.5}
+.modal{display:none;position:fixed;inset:0;background:#000b;z-index:50;padding:18px;align-items:center;justify-content:center}.modalbox{background:#fff;width:min(1320px,98vw);max-height:95vh;overflow:auto;border-radius:16px}.mhead{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;position:sticky;top:0;background:#fff;border-bottom:1px solid #eee;z-index:3}.detail{padding:26px}.detail h2{font-size:36px}.catalog img{display:block;width:100%;height:auto;margin:0 0 22px;border:1px solid #ddd;border-radius:10px}.seriesitems{margin-top:25px;border:1px solid #ddd;border-radius:12px;overflow:hidden}.srow{display:grid;grid-template-columns:145px 1fr 110px 120px 70px;gap:10px;align-items:center;padding:11px 13px;border-bottom:1px solid #eee;font-size:12px}.refhero img{width:100%;max-height:78vh;object-fit:contain;background:#111}.tabs{display:flex;gap:8px;margin:18px 0}.tabs button{padding:8px 12px;border:1px solid #ddd;background:#fff;border-radius:999px}.tabs button.on{background:#111;color:#fff}
+.showroomLayout{display:grid;grid-template-columns:minmax(520px,1.15fr) minmax(420px,.85fr);gap:20px;align-items:start}
+.mapPane{min-width:0}.mapSticky{position:sticky;top:92px;background:#fff;border:1px solid #e2e2e2;border-radius:16px;overflow:hidden}
+.mapToolbar{display:flex;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #eee;font-size:12px}.mapToolbar span{color:#666}
+.mapWrap{position:relative;background:#fff;overflow:auto;max-height:calc(100vh - 150px)}.mapCanvas{position:relative;width:100%;line-height:0}#floorplan{width:100%;height:auto;display:block}#hotspots{position:absolute;inset:0;pointer-events:none}.mapHotspot{pointer-events:auto}
+.mapHotspot{position:absolute;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;border:0;background:transparent;z-index:5;cursor:pointer}.mapHotspot:hover{outline:3px solid rgba(0,0,0,.42);background:rgba(255,255,255,.08)}.hotTip{display:none;position:absolute;left:50%;top:-27px;transform:translateX(-50%);background:#111;color:#fff;font-size:10px;padding:3px 6px;border-radius:5px;white-space:nowrap}.mapHotspot:hover .hotTip{display:block}.mapHotspot.selected{outline:3px solid #111;box-shadow:0 0 0 4px rgba(255,255,255,.72)}.zoneGlow{display:none;position:absolute;width:54px;height:54px;border:5px solid #111;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 12px rgba(255,255,255,.75),0 0 0 16px rgba(0,0,0,.12);pointer-events:none;animation:pulse 1.3s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 18px rgba(255,255,255,.35),0 0 0 22px rgba(0,0,0,.05)}}
+.zonePane{min-width:0}.zoneCard{background:#fff;border:1px solid #e3e3e3;border-radius:15px;margin-bottom:13px;overflow:hidden}.zoneCard.active{outline:3px solid #111}
+.zoneTitle{padding:15px 16px;display:flex;justify-content:space-between;gap:12px;cursor:pointer}.zoneTitle h3{margin:0 0 4px;font-size:18px}.zoneTitle .loc{font-size:22px;font-weight:900}
+.zonePhotos{display:flex;gap:8px;overflow:auto;padding:0 14px 13px}.zonePhotos img{width:180px;height:125px;object-fit:cover;border-radius:9px;background:#eee}
+.zoneItems{border-top:1px solid #eee}.zoneHero{background:#fff;border:1px solid #e3e3e3;border-radius:15px;overflow:hidden}.zoneHeroHead{padding:18px;display:flex;justify-content:space-between;gap:15px}.zoneHeroHead h2{margin:5px 0 3px;font-size:26px}.zoneHeroHead .bigNo{font-size:32px;font-weight:900}.zonePhotos.big img{width:245px;height:170px}.moreBtn{width:calc(100% - 30px);margin:12px 15px 15px;border:1px solid #ddd;background:#fff;border-radius:9px;padding:11px}.hiddenItems{display:none}.hiddenItems.open{display:block}.zitem{display:grid;grid-template-columns:115px 1fr 105px;gap:9px;padding:10px 15px;border-bottom:1px solid #eee;cursor:pointer}.zitem:hover{background:#fafafa}.showbadge{font-size:10px;background:#111;color:#fff;border-radius:999px;padding:3px 6px}
+@media(max-width:900px){main{padding:16px}.cards,.layout,.refgrid,.spacegrid{grid-template-columns:1fr}.cart{position:static}.nav{margin-left:15px}.nav button{padding:8px 5px}.row{grid-template-columns:120px 1fr 110px}.row>*:nth-child(3){display:none}.srow{grid-template-columns:120px 1fr 90px}.srow>*:nth-child(3),.srow>*:nth-child(5){display:none}}
+
+
+
+nav .navExternal{
+  display:flex !important;
+  align-items:center !important;
+  align-self:stretch;
+  height:auto !important;
+  padding:0 14px !important;
+  margin:0;
+  box-sizing:border-box;
+  color:#555;
+  text-decoration:none;
+  font-weight:700;
+  white-space:nowrap;
+  line-height:normal;
+}
+nav .navExternal:hover{color:#111}
+</style></head><body>
+<header><img src="logo.png"><nav class="nav"><button data-view="showroom" class="on">쇼룸 안내</button><button data-view="products">제품/견적</button><a class="navExternal" href="https://planning.fursys.com/planning-idea" target="_blank" rel="noopener noreferrer">Planning Ideas</a></nav><button class="cartTop" onclick="showView('products');document.getElementById('cart').scrollIntoView()">견적함 <span id="cartCount">0</span></button></header>
+<main>
+<section id="showroom" class="view on">
+<div class="hero"><h1>쇼룸 안내</h1><p>평면도를 중심으로 전시 존을 탐색하세요. 품목을 누르면 해당 설치위치가 지도에서 강조됩니다.</p></div>
+<div class="showroomLayout">
+ <div class="mapPane"><div class="mapSticky">
+  <div class="mapToolbar"><b>FURSYS SHOWROOM MAP</b><span id="activeZoneLabel">전체 쇼룸</span></div>
+  <div id="mapWrap" class="mapWrap"><div id="mapCanvas" class="mapCanvas"><img src="image2.png" id="floorplan"><div id="hotspots"></div><div id="zoneGlow" class="zoneGlow"></div></div></div>
+ </div></div>
+ <div class="zonePane">
+  
+  <div class="pills" id="showPills"><button class="pill on" data-s="">전체</button><button class="pill" data-s="워크스테이션">워크스테이션</button><button class="pill" data-s="중역">중역</button><button class="pill" data-s="라운지, 소파">라운지·소파</button><button class="pill" data-s="컨퍼런스">컨퍼런스</button><button class="pill" data-s="기타">기타</button><button class="pill" data-s="9층 확인 가능 품목">9층</button></div>
+  <div id="showSum" class="summary">평면도의 번호를 눌러 전시 존을 확인하세요.</div><div id="zoneCards"></div>
+ </div>
+</div></section>
+
+<section id="products" class="view"><div class="hero"><h1>제품 찾기</h1><p>품목을 누르면 해당 시리즈의 카탈로그 내용과 색상·코드별 세부 품목을 확인하고 견적함에 담을 수 있습니다.</p></div>
+<div class="search"><input id="q" placeholder="예: ENABLE, FDD016, 모션데스크, CH123A"><button class="black" onclick="run()">검색</button></div>
+<div class="pills" id="catPills"><button class="pill on" data-g="">전체</button><button class="pill" data-g="DESK">데스크</button><button class="pill" data-g="CHAIR">의자</button><button class="pill" data-g="TABLE">테이블</button><button class="pill" data-g="SOFA">소파</button><button class="pill" data-g="SPACE">부스/공간</button></div>
+<div class="layout"><div class="panel"><div id="sum" class="summary"></div><div class="row head"><span>시리즈</span><span>코드</span><span>품목</span><span>소비자가</span></div><div id="results"></div></div>
+<aside class="panel cart" id="cart"><h3>견적함</h3><div id="cartitems" class="cartitems"></div><div class="totals"><div class="trow"><span>소비자가 합계 (VAT 별도)</span><b id="sumRetail">₩0</b></div><div class="trow"><span>전체 할인율</span><span><input id="disc" class="disc" type="number" value="0" oninput="recalc()"> %</span></div><div class="trow"><span>할인 적용가 (VAT 별도)</span><b id="net">₩0</b></div><div class="vatbox"><div class="trow"><span>VAT 10%</span><b id="vat">₩0</b></div><div class="trow grand"><span>고객 안내가 (VAT 포함)</span><b id="gross">₩0</b></div></div><div id="warn" class="warn"></div></div></aside></div></section>
+
+
+
+
+</main>
+<div id="modal" class="modal" onclick="if(event.target===this)closeM()"><div class="modalbox"><div class="mhead"><b id="mtitle"></b><button onclick="closeM()">닫기</button></div><div id="detail" class="detail"></div></div></div>
+<script src="data.js"></script><script src="showroom.js"></script><script src="showroom_photos.js"></script><script>
+const D=window.FURSYS_DATA,ALL=[...D.sets,...D.units],REF=[],SHOW=window.FURSYS_SHOWROOM||[];window._VARIANTS=ALL;let group='',cart=[],refSel='전체',showSec='';const SHOWCODES=new Set(SHOW.map(x=>x.code.toUpperCase()));
+const won=n=>'₩'+Math.round(Number(n||0)).toLocaleString('ko-KR'), esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id===v));document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('on',x.dataset.view===v));window.scrollTo(0,0)}
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>showView(b.dataset.view));
+function searchText(x){return[x.group,x.series,x.code,x.name,x.combo].join(' ').toLowerCase()}
+function groupedRows(arr){let m=new Map();arr.forEach(x=>{let k=x.t+'|'+x.code;if(!m.has(k))m.set(k,[]);m.get(k).push(x)});return [...m.values()].map(a=>{let prices=[...new Set(a.map(x=>x.retail).filter(Boolean))].sort((a,b)=>a-b);return {base:a[0],variants:a,price:prices.length>1?won(prices[0])+' ~':won(prices[0]||0)}})}
+function run(){let qq=q.value.trim().toLowerCase(),terms=qq?qq.split(/\s+/):[];let a=ALL.filter(x=>(!group||(x.group||'').toUpperCase().includes(group))&&(!terms.length||terms.every(t=>searchText(x).includes(t))));let g=groupedRows(a);g.sort((a,b)=>(a.base.series||'').localeCompare(b.base.series||'')||(a.base.code||'').localeCompare(b.base.code||''));sum.textContent=`${g.length.toLocaleString()}개 제품코드 · 색상 중복 제외 · 최대 300개 표시`;results.innerHTML=g.slice(0,300).map(z=>`<div class="row click productResult" data-series="${esc(z.base.series)}" data-code="${esc(z.base.code)}"><span>${esc(z.base.series)||'-'}</span><span class="code">${esc(z.base.code)}</span><span>${esc(z.base.name)||'-'} <span class="muted">· 색상 ${z.variants.length}종</span>${SHOWCODES.has(String(z.base.code).toUpperCase())?`<br><span style="display:inline-block;margin-top:5px;padding:4px 7px;border-radius:999px;background:#111;color:#fff;font-size:10px">쇼룸 전시 · ${esc(SHOW.find(a=>a.code.toUpperCase()===String(z.base.code).toUpperCase()).location)}</span>`:''}</span><span class="price">${z.price}</span></div>`).join('')||'<div class="summary">품목이 없습니다.</div>'}
+function setCat(g){group=g;document.querySelectorAll('#catPills .pill').forEach(x=>x.classList.toggle('on',(x.dataset.g||'')===group));run()}
+document.querySelectorAll('#catPills .pill').forEach(b=>b.onclick=()=>setCat(b.dataset.g||''));q.addEventListener('input',()=>run());
+document.getElementById('results').addEventListener('click',function(e){
+  const row=e.target.closest('.productResult');
+  if(!row)return;
+  openSeries(row.dataset.series||'',row.dataset.code||'');
+});
+function openSeries(series,focus){
+ let items=ALL.filter(x=>x.series===series);
+ if(!items.length && focus) items=ALL.filter(x=>String(x.code).toUpperCase()===String(focus).toUpperCase());
+ if(!items.length){alert('연결된 판매 품목을 찾지 못했습니다.');return}
+ let actualSeries=items[0].series||series;
+ let focusShow=SHOW.find(z=>focus && String(z.code).toUpperCase()===String(focus).toUpperCase());
+ let pages=[...new Set(items.flatMap(x=>x.pages||[]))].slice(0,8);
+ let byCode=new Map(); items.forEach((x)=>{let k=x.code;if(!byCode.has(k))byCode.set(k,[]);byCode.get(k).push(x)});
+ let codeBlocks=[...byCode.entries()].map(([code,vars])=>{
+   let prices=vars.map(v=>+v.retail||0).filter(Boolean), mn=Math.min(...prices),mx=Math.max(...prices);
+   let showroom=SHOW.filter(z=>String(z.code).toUpperCase()===String(code).toUpperCase());
+   return `<div class="seriesitems" ${code===focus?'style="outline:3px solid #111"':''}>
+    <div class="srow" style="grid-template-columns:145px 1fr 120px"><b>${esc(code)}</b><span>${esc(vars[0].name)} ${showroom.length?`<span class="showbadge">쇼룸 ${esc(showroom[0].location)}</span>`:''}</span><b class="price">${mn===mx?won(mn):won(mn)+' ~ '+won(mx)}</b></div>
+    ${vars.map(v=>{let idx=ALL.indexOf(v);return `<div class="srow"><b>${esc(v.code)}</b><span>${esc(v.name)}</span><span>${esc(v.color)}</span><b>${won(v.retail)}</b><button onclick="addByIndex(${idx})">견적 담기</button></div>`}).join('')}
+   </div>`
+ }).join('');
+ mtitle.textContent=actualSeries||'제품 상세';
+ detail.innerHTML=`<h2>${esc(actualSeries||'제품')} ${focusShow?`<span class="showbadge">쇼룸 No.${esc(focusShow.location)}</span>`:''}</h2><p class="muted">카탈로그와 색상별 실제 판매 품목을 확인하고 견적함에 담을 수 있습니다.</p>
+ <h3>CATALOG</h3><div class="catalog">${pages.map(p=>`<img loading="lazy" src="p${p}.jpg">`).join('')||'<p class="muted">연결된 카탈로그 페이지가 없습니다.</p>'}</div>
+ <h3>판매 품목</h3>${codeBlocks}`;
+ modal.style.display='flex';
+}
+function addByIndex(i){let x=ALL[i];if(x)add(x)}
+function add(x){let key=x.t+'|'+x.code+'|'+x.color,f=cart.find(z=>z.key===key);f?f.qty++:cart.push({key,x,qty:1});drawCart()}
+function drawCart(){cartCount.textContent=cart.reduce((a,z)=>a+z.qty,0);cartitems.innerHTML=cart.length?cart.map((z,i)=>`<div class="citem"><div class="cline"><b>${esc(z.x.code)} · ${esc(z.x.color)}</b><button onclick="cart.splice(${i},1);drawCart()">×</button></div><div class="cline"><span>${won(z.x.retail)} × <input class="qty" type="number" min="1" value="${z.qty}" onchange="cart[${i}].qty=Math.max(1,+this.value||1);recalc()"></span><b>${won(z.x.retail*z.qty)}</b></div></div>`).join(''):'<p class="muted">아직 담긴 품목이 없습니다.</p>';recalc()}
+function recalc(){let s=cart.reduce((a,z)=>a+z.x.retail*z.qty,0),d=Math.max(0,+disc.value||0),n=Math.round(s*(1-d/100)),v=Math.round(n*.1);sumRetail.textContent=won(s);net.textContent=won(n);vat.textContent=won(v);gross.textContent=won(n+v);warn.textContent=d>30?'30%를 초과한 할인율입니다.':''}
+function refFilter(r){refSel=r;document.querySelectorAll('#refPills .pill').forEach(x=>x.classList.toggle('on',x.dataset.r===r));renderRefs()}
+function renderRefs(){let a=refSel==='전체'?REF:REF.filter(x=>x.series===refSel);refgrid.innerHTML=a.map((r,i)=>`<div class="refcard" onclick="openRef(${REF.indexOf(r)})"><img loading="lazy" src="${r.src}"><div class="refmeta"><b>${esc(r.series)}</b><span class="muted">${esc(r.title)}</span></div></div>`).join('')}
+document.querySelectorAll('#refPills .pill').forEach(b=>b.onclick=()=>refFilter(b.dataset.r));
+function openRef(i){let r=REF[i];mtitle.textContent=r.series;detail.innerHTML=`<div class="refhero"><img src="${r.src}"></div><h2>${esc(r.series)}</h2><p>${esc(r.title)}</p><button class="black" onclick="closeM();showView('products');q.value=${JSON.stringify(r.series)};run()">관련 제품 찾기 →</button>`;modal.style.display='flex'}
+
+const SP=window.FURSYS_SHOWROOM_PHOTOS||[];
+const ZPOS={"1":[74.3933,49.5117],"2":[67.0629,49.3164],"3":[78.5537,38.1836],"4":[65.1808,39.0137],"5":[76.3249,29.248],"6":[73.2046,24.1211],"7":[63.3482,26.709],"8":[56.3645,28.8574],"9":[50.3715,23.1934],"10":[52.0059,31.543],"11":[42.3477,19.8242],"12":[37.0976,20.2637],"13":[34.1753,19.6777],"14":[26.8945,19.5801],"15":[35.6117,32.7148],"16":[35.6612,40.8203],"17":[34.0267,47.4121],"18":[24.0713,49.0723],"19":[34.1753,53.7598],"20":[27.4393,53.6621],"21":[22.7836,57.4707],"22":[23.3779,60.1562],"23":[36.2556,58.3984],"24":[40.9113,56.2012],"25":[36.107,63.1836],"26":[24.5666,66.0645],"27":[15.4532,56.543],"28":[23.576,72.8027],"29":[70.4309,62.3047],"30":[78.108,63.0859],"31":[83.3581,75.3906],"32":[21.892,22.5098],"33":[20.0099,29.834],"34":[21.3472,39.9902],"35":[20.7033,79.0527],"36":[28.7271,80.8594],"37":[41.0104,77.5879],"38":[46.8053,79.9316],"39":[64.1902,77.832],"40":[72.6102,77.9297],"41":[77.365,83.3496],"42":[84.6954,83.252]};
+let selectedZone="1";
+function cleanLoc(v){let m=String(v||'').match(/\d+/);return m?m[0]:String(v||'')}
+function renderHotspots(){hotspots.innerHTML=Object.entries(ZPOS).map(([n,p])=>`<button aria-label="No.${n}" title="No.${n}" class="mapHotspot ${selectedZone===n?'selected':''}" style="left:${p[0]}%;top:${p[1]}%" onclick="selectZone('${n}')"><span class="hotTip">No.${n}</span></button>`).join('')}
+function zonePhotos(section,loc){
+ let key=cleanLoc(loc);
+ return SP.filter(p=>p.sheet===section && cleanLoc(p.location)===key);
+}
+function selectZone(n){selectedZone=String(n);renderHotspots();let p=ZPOS[selectedZone];activeZoneLabel.textContent='전시 위치 No.'+selectedZone;zoneGlow.style.display='none';renderSelectedZone()}
+function renderSelectedZone(){let all=SHOW.filter(x=>cleanLoc(x.location)===selectedZone);if(showSec)all=all.filter(x=>x.section===showSec);if(!all.length){showSum.textContent=`No.${selectedZone}`;zoneCards.innerHTML='<div class="summary">이 번호에 연결된 전시 품목이 없습니다.</div>';return}
+let first=all[0],series=[...new Set(all.map(x=>x.series).filter(Boolean))],pics=zonePhotos(first.section,first.location),primary=all.slice(0,6),rest=all.slice(6);
+showSum.textContent=`No.${selectedZone} · ${first.section} · ${all.length}개 품목 · 품목을 클릭하면 견적함에 추가됩니다`;
+zoneCards.innerHTML=`<div class="zoneHero"><div class="zoneHeroHead"><div><span class="showbadge">${esc(first.section)}</span><h2>${esc(series.slice(0,3).join(' · ')||'전시 구성')}</h2><span class="muted">이 위치에서 직접 확인할 수 있습니다.</span></div><div class="bigNo">No.${selectedZone}</div></div>${pics.length?`<div class="zonePhotos big">${pics.map(p=>`<img loading="lazy" src="${p.src}">`).join('')}</div>`:`<div style="margin:0 15px 15px;padding:20px;border:1px dashed #ccc;border-radius:10px;color:#999;text-align:center">이 전시 위치에 연결된 실물사진이 없습니다.</div>`}<div class="zoneItems">${primary.map(itemRow).join('')}</div>${rest.length?`<button class="moreBtn" onclick="document.getElementById('moreItems').classList.toggle('open');this.textContent=this.textContent.includes('전체')?'접기':'전체 ${all.length}개 품목 보기'">전체 ${all.length}개 품목 보기</button><div id="moreItems" class="zoneItems hiddenItems">${rest.map(itemRow).join('')}</div>`:''}</div>`}
+function addShowroomItem(y){
+ if(!y)return;
+ let code=String(y.code||'').trim();
+ let retail=Number(y.retail||0);
+ if(!retail){alert('이 전시품목은 소비자가가 없어 견적함에 담을 수 없습니다.');return}
+ let x={
+   t:'showroom',
+   group:y.section||'쇼룸',
+   series:y.series||'',
+   code:code||'-',
+   color:y.color||'',
+   combo:'',
+   name:y.name||'쇼룸 전시품목',
+   retail:retail,
+   pages:[]
+ };
+ add(x);
+}
+function itemRow(y){
+ let canAdd=Number(y.retail||0)>0;
+ return `<div class="zitem showroomItem" title="${canAdd?'클릭하여 견적함에 추가':'소비자가 정보 없음'}" onclick='addShowroomItem(${JSON.stringify(y)})'>
+   <b>${esc(y.code||'-')}</b>
+   <span>${esc(y.name)}<br><span class="muted">${esc(y.color)} ${y.note?'· '+esc(y.note):''}</span></span>
+   <b class="price">${canAdd?won(y.retail):'-'}</b>
+ </div>`;
+}
+function renderShowroom(){renderSelectedZone()}
+document.querySelectorAll('#showPills .pill').forEach(b=>b.onclick=()=>{showSec=b.dataset.s||'';document.querySelectorAll('#showPills .pill').forEach(x=>x.classList.toggle('on',(x.dataset.s||'')===showSec));let valid=SHOW.filter(x=>!showSec||x.section===showSec).map(x=>cleanLoc(x.location));if(!valid.includes(selectedZone)&&valid.length)selectedZone=valid[0];renderHotspots();selectZone(selectedZone)});
+
+function closeM(){modal.style.display='none'}run();drawCart();renderHotspots();selectZone('1');
+</script></body></html>
